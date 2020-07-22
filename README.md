@@ -1,3 +1,6 @@
+
+![Test](https://github.com/netpyoung/NF.Tool.UnityPackage/workflows/Test/badge.svg?branch=master)
+
 https://github.com/TwoTenPvP/UnityPackager
 https://github.com/marketplace/actions/create-unitypackage
 https://github.com/Cobertos/unitypackage_extractor
@@ -12,3 +15,5 @@ windows-latest
 
 https://github.com/actions/setup-dotnet
 3.1.300
+
+https://github.com/<OWNER>/<REPOSITORY>/workflows/<WORKFLOW_FILE_PATH>/badge.svg

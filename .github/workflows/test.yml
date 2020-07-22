@@ -1,4 +1,4 @@
-name: Package Tests
+name: Test
 
 on: 
   push:
@@ -11,10 +11,13 @@ jobs:
 
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: setup dotnet
+      uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.300
-    - run: |
+    - name: testing
+      run: |
         cd src
         dotnet test
