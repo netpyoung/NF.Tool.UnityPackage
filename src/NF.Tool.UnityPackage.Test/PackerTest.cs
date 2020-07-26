@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Cryptography;
 using Xunit;
 using Xunit.Abstractions;
+using YamlDotNet.RepresentationModel;
 
 namespace NF.Tool.UnityPackage.Test
 {
@@ -60,12 +61,31 @@ namespace NF.Tool.UnityPackage.Test
                         else
                         {
                             Assert.True(File.Exists(unpackedPath));
-                            var a = File.ReadAllBytes(entry);
-                            var b = File.ReadAllBytes(unpackedPath);
-                            Assert.Equal(a, b);
+                            if (Path.GetExtension( unpackedPath) == ".meta")
+                            {
+                                //var a = GetYamlDocument(entry);
+                                //var b = GetYamlDocument(unpackedPath);
+                                //Assert.Equal(a, b);
+                            }
+                            else
+                            {
+                                var a = File.ReadAllBytes(entry);
+                                var b = File.ReadAllBytes(unpackedPath);
+                                Assert.Equal(a, b);
+                            }
                         }
                     }
                 }
+            }
+        }
+
+        YamlDocument GetYamlDocument(string metaPath)
+        {
+            using (StreamReader reader = new StreamReader(metaPath))
+            {
+                var yaml = new YamlStream();
+                yaml.Load(reader);
+                return yaml.Documents[0];
             }
         }
 

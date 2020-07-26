@@ -12,11 +12,12 @@ namespace NF.Tool.UnityPackage
         {
             if (!string.IsNullOrWhiteSpace(prefix))
             {
-                TempDirectoryPath = Path.Combine(Path.GetTempPath(), prefix, Interlocked.Increment(ref mUID).ToString());
+
+                TempDirectoryPath = Path.Combine(Path.GetTempPath(), prefix, $"{Path.GetRandomFileName()}.{Interlocked.Increment(ref mUID)}");
             }
             else
             {
-                TempDirectoryPath = Path.Combine(Path.GetTempPath(), Interlocked.Increment(ref mUID).ToString());
+                TempDirectoryPath = Path.Combine(Path.GetTempPath(), $"{Path.GetRandomFileName()}.{Interlocked.Increment(ref mUID)}");
             }
 
             Directory.CreateDirectory(TempDirectoryPath);

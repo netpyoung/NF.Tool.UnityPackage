@@ -33,8 +33,13 @@ namespace NF.Tool.UnityPackage
                 ignores = o.Ignores.Split(';').Select(x => new Regex(x, RegexOptions.Compiled | RegexOptions.IgnoreCase)).ToList();
             }
 
+            Regex trim = null;
+            if (!string.IsNullOrWhiteSpace(o.Trim))
+            {
+                trim = new Regex($"^{o.Trim}");
+            }
 
-            using (var tempDirectory = new TempDirectory("packer"))
+            using (var tempDirectory = new TempDirectory())
             {
                 try
                 {
@@ -57,11 +62,11 @@ namespace NF.Tool.UnityPackage
 
                         if (Directory.Exists(absPath))
                         {
-                            ProcessDirectory(absPath, o.Trim, o.Prefix, tempDirectory.TempDirectoryPath, ignores);
+                            ProcessDirectory(absPath, trim, o.Prefix, tempDirectory.TempDirectoryPath, ignores);
                         }
                         else if (File.Exists(absPath))
                         {
-                            CreateAsset(absPath, o.Trim, o.Prefix, tempDirectory.TempDirectoryPath);
+                            CreateAsset(absPath, trim, o.Prefix, tempDirectory.TempDirectoryPath);
                         }
                         else
                         {
@@ -80,7 +85,7 @@ namespace NF.Tool.UnityPackage
             }
         }
 
-        private void CreateAsset(string inFileOrDirectory, string trim, string prefix, string tempDirectoryPath)
+        private void CreateAsset(string inFileOrDirectory, Regex trim, string prefix, string tempDirectoryPath)
         {
             // a.txt
             // b/
@@ -126,14 +131,20 @@ namespace NF.Tool.UnityPackage
             }
 
             // guidDir/pathname
-            var pathname =inFileOrDirectory.Substring(Environment.CurrentDirectory.Replace(Path.DirectorySeparatorChar, '/').Length).Trim('/');
+            var pathname = inFileOrDirectory.Substring(Environment.CurrentDirectory.Replace(Path.DirectorySeparatorChar, '/').Length).Trim('/');
+            if (trim != null)
+            {
+                pathname = $"{prefix}{trim.Replace(pathname, "", 1)}";
+            }
+            else
+            {
+                pathname = $"{prefix}{pathname}";
+            }
 
-            pathname = new Regex($"^{trim}").Replace(pathname, "", 1);
-            pathname = $"{prefix}{pathname}";
             File.WriteAllText(Path.Combine(tempDirectoryPath, guid, "pathname"), pathname);
         }
 
-        private void ProcessDirectory(string inputDirectory, string trim, string prefix, string tempDirectoryPath, List<Regex> ignores)
+        private void ProcessDirectory(string inputDirectory, Regex trim, string prefix, string tempDirectoryPath, List<Regex> ignores)
         {
             foreach (var entry in Directory.EnumerateFileSystemEntries(inputDirectory, "*", SearchOption.AllDirectories))
             {
