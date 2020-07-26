@@ -6,44 +6,62 @@ using System.Linq;
 
 namespace NF.Tool.UnityPackage
 {
-    internal class Unpacker
+    public class Unpacker
     {
         public Unpacker()
         {
         }
 
-        public int Run(Program.OptionUnpack o)
+        public Exception Run(IOptionUnpack o)
         {
+            // .unitypackage
+            //   - guidDir/
+            //   | - asset
+            //   | - asset.meta
+            //   | - pathname
             using (var tempDirectory = new TempDirectory())
             {
                 try
                 {
-                    Directory.CreateDirectory(o.OutputDirectoryPath);
-                    ExtractTarGzip(o.InputUnityPackagePath, tempDirectory.TempDirectoryPath);
-                    foreach (var dirEntry in Directory.GetDirectories(tempDirectory.TempDirectoryPath))
+                    if (!string.IsNullOrWhiteSpace(o.OutputDirectoryPath))
                     {
-                        var pathnamePath = Path.Combine(dirEntry, "pathname");
-                        var assetPath = Path.Combine(dirEntry, "asset");
-                        if (!File.Exists(pathnamePath) || !File.Exists(assetPath))
+                        Directory.CreateDirectory(o.OutputDirectoryPath);
+                    }
+
+                    ExtractTarGzip(o.InputUnityPackagePath, tempDirectory.TempDirectoryPath);
+                    foreach (var guidDir in Directory.GetDirectories(tempDirectory.TempDirectoryPath))
+                    {
+                        var pathnamePath = Path.Combine(guidDir, "pathname");
+                        if (!File.Exists(pathnamePath))
                         {
                             continue;
                         }
 
                         var pathname = File.ReadLines(pathnamePath).First().TrimEnd();
                         var assetOutPath = Path.Combine(o.OutputDirectoryPath, pathname);
-                        var assetOupDirPath = Path.GetDirectoryName(assetOutPath);
-                        if (!Directory.Exists(assetOupDirPath))
+                        var assetOutDirPath = Path.GetDirectoryName(assetOutPath);
+                        if (!Directory.Exists(assetOutDirPath))
                         {
-                            Directory.CreateDirectory(assetOupDirPath);
+                            Directory.CreateDirectory(assetOutDirPath);
                         }
-                        File.Move(assetPath, assetOutPath);
+
+                        var assetPath = Path.Combine(guidDir, "asset");
+                        if (File.Exists(assetPath))
+                        {
+                            File.Move(assetPath, assetOutPath);
+                        }
+
+                        var assetMetaPath = Path.ChangeExtension(assetPath, "meta");
+                        if (o.IsUnpackMeta && File.Exists(assetMetaPath))
+                        {
+                            File.Move(assetMetaPath, $"{assetOutPath}.meta");
+                        }
                     }
-                    return 0;
+                    return null;
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine(ex);
-                    return 1;
+                    return ex;
                 }
             }
 
