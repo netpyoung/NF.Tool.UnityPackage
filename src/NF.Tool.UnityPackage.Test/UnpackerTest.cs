@@ -1,9 +1,8 @@
+using NF.Tool.UnityPackage.Console;
 using System;
 using System.IO;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
-using NF.Tool.UnityPackage.Console;
 
 namespace NF.Tool.UnityPackage.Test
 {
