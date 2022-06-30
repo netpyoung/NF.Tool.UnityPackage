@@ -20,7 +20,7 @@ namespace NF.Tool.UnityPackage
 
         public Exception Run(IOptionPack o)
         {
-            var inputs = o.Inputs.Split(';');
+            string[] inputs = o.Inputs.Split(';');
             Debug.Assert(inputs.Length > 0);
 
             List<Regex> ignores = null;
@@ -39,11 +39,11 @@ namespace NF.Tool.UnityPackage
                 trim = new Regex($"^{o.Trim}");
             }
 
-            using (var tempDirectory = new TempDirectory())
+            using (TempDirectory tempDirectory = new TempDirectory())
             {
                 try
                 {
-                    foreach (var input in inputs)
+                    foreach (string input in inputs)
                     {
                         if (ignores.Any(ignore => ignore.IsMatch(input)))
                         {
@@ -115,7 +115,7 @@ namespace NF.Tool.UnityPackage
 
             // guidDir/asset.meta
             {
-                var metaPath = Path.Combine(tempDirectoryPath, guid, "asset.meta");
+                string metaPath = Path.Combine(tempDirectoryPath, guid, "asset.meta");
 
                 using (StreamWriter writer = new StreamWriter(metaPath))
                 {
@@ -131,7 +131,7 @@ namespace NF.Tool.UnityPackage
             }
 
             // guidDir/pathname
-            var pathname = inFileOrDirectory.Substring(Environment.CurrentDirectory.Replace(Path.DirectorySeparatorChar, '/').Length).Trim('/');
+            string pathname = inFileOrDirectory.Substring(Environment.CurrentDirectory.Replace(Path.DirectorySeparatorChar, '/').Length).Trim('/');
             if (trim != null)
             {
                 pathname = $"{prefix}{trim.Replace(pathname, "", 1)}";
@@ -146,7 +146,7 @@ namespace NF.Tool.UnityPackage
 
         private void ProcessDirectory(string inputDirectory, Regex trim, string prefix, string tempDirectoryPath, List<Regex> ignores)
         {
-            foreach (var entry in Directory.EnumerateFileSystemEntries(inputDirectory, "*", SearchOption.AllDirectories))
+            foreach (string entry in Directory.EnumerateFileSystemEntries(inputDirectory, "*", SearchOption.AllDirectories))
             {
                 if (Path.GetExtension(entry) == ".meta")
                 {
@@ -169,7 +169,7 @@ namespace NF.Tool.UnityPackage
             {
                 using (StreamReader reader = new StreamReader(metaPath))
                 {
-                    var yaml = new YamlStream();
+                    YamlStream yaml = new YamlStream();
                     yaml.Load(reader);
                     return yaml.Documents[0];
                 }
@@ -246,8 +246,8 @@ namespace NF.Tool.UnityPackage
 
         public string GetRelativePath(string relativeTo, string path)
         {
-            var uri = new Uri(relativeTo);
-            var rel = Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            Uri uri = new Uri(relativeTo);
+            string rel = Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             if (rel.Contains(Path.DirectorySeparatorChar.ToString()) == false)
             {
                 rel = $".{ Path.DirectorySeparatorChar }{ rel }";
@@ -276,16 +276,16 @@ namespace NF.Tool.UnityPackage
 
         void AddDirectoryFilesToTar(TarArchive tarArchive, string sourceDirectory)
         {
-            var filenames = Directory.GetFiles(sourceDirectory);
-            foreach (var filename in filenames)
+            string[] filenames = Directory.GetFiles(sourceDirectory);
+            foreach (string filename in filenames)
             {
-                var tarEntry = TarEntry.CreateEntryFromFile(filename);
+                TarEntry tarEntry = TarEntry.CreateEntryFromFile(filename);
                 tarEntry.Name = filename.Remove(0, tarArchive.RootPath.Length + 1);
                 tarArchive.WriteEntry(tarEntry, true);
             }
 
-            var directories = Directory.GetDirectories(sourceDirectory);
-            foreach (var directory in directories)
+            string[] directories = Directory.GetDirectories(sourceDirectory);
+            foreach (string directory in directories)
             {
                 AddDirectoryFilesToTar(tarArchive, directory);
             }

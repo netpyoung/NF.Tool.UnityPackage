@@ -18,12 +18,12 @@ namespace NF.Tool.UnityPackage.Test
         [Fact]
         public void TestPackageExtract()
         {
-            using (var temp = new TempDirectory())
+            using (TempDirectory temp = new TempDirectory())
             {
-                var packagePath = "../../../test.unitypackage";
+                string packagePath = "../../../test.unitypackage";
 
                 Assert.True(File.Exists(packagePath));
-                var err = new Unpacker().Run(new Program.OptionUnpack
+                Exception err = new Unpacker().Run(new Program.OptionUnpack
                 {
                     InputUnityPackagePath = packagePath,
                     OutputDirectoryPath = temp.TempDirectoryPath,
@@ -41,12 +41,12 @@ namespace NF.Tool.UnityPackage.Test
         [Fact]
         public void TestPackageExtractWithLeadingDots()
         {
-            using (var temp = new TempDirectory())
+            using (TempDirectory temp = new TempDirectory())
             {
-                var packagePath = "../../../testLeadingDots.unitypackage";
+                string packagePath = "../../../testLeadingDots.unitypackage";
 
                 Assert.True(File.Exists(packagePath));
-                var err = new Unpacker().Run(new Program.OptionUnpack
+                Exception err = new Unpacker().Run(new Program.OptionUnpack
                 {
                     InputUnityPackagePath = packagePath,
                     OutputDirectoryPath = temp.TempDirectoryPath,

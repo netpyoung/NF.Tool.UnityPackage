@@ -42,7 +42,7 @@ namespace NF.Tool.UnityPackage.Console
                 .MapResult(
                 (OptionPack o) =>
                 {
-                    var err = new Packer().Run(o);
+                    System.Exception err = new Packer().Run(o);
                     if (err != null)
                     {
                         System.Console.Error.WriteLine(err);
@@ -55,7 +55,7 @@ namespace NF.Tool.UnityPackage.Console
                 },
                 (OptionUnpack o) =>
                 {
-                    var err = new Unpacker().Run(o);
+                    System.Exception err = new Unpacker().Run(o);
                     if (err != null)
                     {
                         System.Console.Error.WriteLine(err);
@@ -68,7 +68,7 @@ namespace NF.Tool.UnityPackage.Console
                 },
                 errs =>
                 {
-                    foreach (var err in errs)
+                    foreach (Error err in errs)
                     {
                         System.Console.Error.WriteLine(err);
                     }

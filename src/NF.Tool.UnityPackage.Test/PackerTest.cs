@@ -1,5 +1,6 @@
 ﻿using NF.Tool.UnityPackage.Console;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using Xunit;
@@ -19,40 +20,40 @@ namespace NF.Tool.UnityPackage.Test
         [Fact]
         public void TestPackerPack()
         {
-            using (var temp = new TempDirectory())
+            using (TempDirectory temp = new TempDirectory())
             {
-                var inputDir = "../../../sample";
-                var prefix = "sample2";
-                var systemEntries = Directory.EnumerateFileSystemEntries(inputDir, "*", SearchOption.AllDirectories);
-                var outputUnityPackage = Path.Combine(temp.TempDirectoryPath, "a.unitypackage");
-                var opt = new Program.OptionPack
+                string inputDir = "../../../sample";
+                string prefix = "sample2";
+                IEnumerable<string> systemEntries = Directory.EnumerateFileSystemEntries(inputDir, "*", SearchOption.AllDirectories);
+                string outputUnityPackage = Path.Combine(temp.TempDirectoryPath, "a.unitypackage");
+                Program.OptionPack opt = new Program.OptionPack
                 {
                     Inputs = inputDir,
                     OutputPath = outputUnityPackage,
                     Prefix = prefix,
                     Trim = "../../../sample",
                 };
-                var packer = new Packer();
-                var err = packer.Run(opt);
+                Packer packer = new Packer();
+                Exception err = packer.Run(opt);
 
                 Assert.Null(err);
 
                 Assert.True(File.Exists(outputUnityPackage));
 
 
-                using (var temp2 = new TempDirectory())
+                using (TempDirectory temp2 = new TempDirectory())
                 {
-                    var err2 = new Unpacker().Run(new Program.OptionUnpack
+                    Exception err2 = new Unpacker().Run(new Program.OptionUnpack
                     {
                         InputUnityPackagePath = outputUnityPackage,
                         OutputDirectoryPath = temp2.TempDirectoryPath,
                         IsUnpackMeta = true
                     });
                     Assert.Null(err2);
-                    foreach (var entry in systemEntries)
+                    foreach (string entry in systemEntries)
                     {
-                        var relative = Path.GetRelativePath(inputDir, entry);
-                        var unpackedPath = Path.Combine(temp2.TempDirectoryPath, prefix, relative);
+                        string relative = Path.GetRelativePath(inputDir, entry);
+                        string unpackedPath = Path.Combine(temp2.TempDirectoryPath, prefix, relative);
 
                         if (Directory.Exists(entry))
                         {
@@ -61,7 +62,7 @@ namespace NF.Tool.UnityPackage.Test
                         else
                         {
                             Assert.True(File.Exists(unpackedPath));
-                            if (Path.GetExtension( unpackedPath) == ".meta")
+                            if (Path.GetExtension(unpackedPath) == ".meta")
                             {
                                 //var a = GetYamlDocument(entry);
                                 //var b = GetYamlDocument(unpackedPath);
@@ -69,8 +70,8 @@ namespace NF.Tool.UnityPackage.Test
                             }
                             else
                             {
-                                var a = File.ReadAllBytes(entry);
-                                var b = File.ReadAllBytes(unpackedPath);
+                                byte[] a = File.ReadAllBytes(entry);
+                                byte[] b = File.ReadAllBytes(unpackedPath);
                                 Assert.Equal(a, b);
                             }
                         }
@@ -83,7 +84,7 @@ namespace NF.Tool.UnityPackage.Test
         {
             using (StreamReader reader = new StreamReader(metaPath))
             {
-                var yaml = new YamlStream();
+                YamlStream yaml = new YamlStream();
                 yaml.Load(reader);
                 return yaml.Documents[0];
             }
@@ -92,11 +93,9 @@ namespace NF.Tool.UnityPackage.Test
         private static byte[] GetMD5(string file)
         {
             using (MD5 md5 = MD5.Create())
+            using (FileStream stream = File.OpenRead(file))
             {
-                using (var stream = File.OpenRead(file))
-                {
-                    return md5.ComputeHash(stream);
-                }
+                return md5.ComputeHash(stream);
             }
         }
     }
