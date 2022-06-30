@@ -3,9 +3,6 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
-		<!--;ubuntu.16.10-x64;osx.10.14-x64-->
-		<!--<PublishSingleFile>true</PublishSingleFile>-->
-		<PublishTrimmed>true</PublishTrimmed>
 		<TrimUnusedDependencies>true</TrimUnusedDependencies>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
