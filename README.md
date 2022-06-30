@@ -19,6 +19,10 @@
 > 7z a -tzip release.zip %CD%/bin/Release/netcoreapp3.1/win10-x64/publish/NF.Tool.UnityPackage.Console.exe
 ```
 
+## GUI
+
+![UnityUnpackGUI](doc/res/UnityUnpackGUI.png)
+
 ## Ref
 
 - <https://github.com/TwoTenPvP/UnityPackager>
