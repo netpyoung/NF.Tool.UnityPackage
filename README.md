@@ -1,6 +1,10 @@
 # NF.Tool.UnityPackage
 
-![Test](https://github.com/netpyoung/NF.Tool.UnityPackage/workflows/Test/badge.svg?branch=master)
+<a href="https://github.com/netpyoung/NF.Tool.UnityPackage/actions">
+  <img src="https://github.com/netpyoung/NF.Tool.UnityPackage/workflows/Test/badge.svg?branch=master" />
+</a>
+
+
 
 ## example
 

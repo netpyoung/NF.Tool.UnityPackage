@@ -20,4 +20,4 @@ jobs:
     - name: testing
       run: |
         cd src
-        dotnet test
+        dotnet test NF.Tool.UnityPackage.Test
