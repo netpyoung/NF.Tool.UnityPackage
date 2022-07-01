@@ -37,7 +37,7 @@ namespace UnityUnpackGUI
                 Opt o = new Opt
                 {
                     InputUnityPackagePath = unityPackagePath,
-                    IsUnpackMeta = false,
+                    IsUnpackMeta = check_include_meta.Checked,
                     OutputDirectoryPath = outDir,
                 };
                 System.Exception err = new Unpacker().Run(o);
