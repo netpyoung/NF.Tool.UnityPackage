@@ -8,8 +8,7 @@ on:
 
 jobs:
   build:
-
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - name: checkout
       uses: actions/checkout@v4
@@ -17,6 +16,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '6.0.x'
+        cache: true
     - name: testing
       run: |
         cd src
