@@ -6,9 +6,10 @@ on:
       - '*'
 
 jobs:
+
   ## ======================================================================================================
   upload_asset_for_windows_cli:
-    name: 📦️ Upload Asset - NF.Tool.UnityPackage.Console.exe
+    name: 🪟📦️ Upload Asset - NF.Tool.UnityPackage.Console.exe
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,9 +31,10 @@ jobs:
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
+
   ## ======================================================================================================
   upload_asset_for_windows_gui:
-    name: 📦️ Upload Asset - UnityUnpackGUI.exe
+    name: 🪟📦️ Upload Asset - UnityUnpackGUI.exe
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,10 +56,34 @@ jobs:
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
+  ## ======================================================================================================
+  upload_asset_for_macos_cli:
+    name: 🍎📦️ Upload Asset - NF.Tool.UnityPackage.Console
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: setup dotnet
+        uses: actions/setup-dotnet@v4
+
+      - name: publish
+        run: |
+          cd src/NF.Tool.UnityPackage.Console
+          dotnet publish -c Release -p:PublishProfile=Properties/PublishProfiles/FolderProfile-macos.pubxml
+
+      - name: 📦️⏫ Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-macos-cli
+          path: src/NF.Tool.UnityPackage.Console/publish/macos/NF.Tool.UnityPackage.Console
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
 
   ## ======================================================================================================
   release:
-    needs: [upload_asset_for_windows_cli, upload_asset_for_windows_gui]
+    needs: [upload_asset_for_windows_cli, upload_asset_for_windows_gui, upload_asset_for_macos_cli]
     name: 🚀 Release
     runs-on: ubuntu-latest
     steps:
@@ -107,3 +133,4 @@ jobs:
           files: |
             ./download-artifacts/artifact-windows-cli/NF.Tool.UnityPackage.Console.exe
             ./download-artifacts/artifact-windows-gui/UnityUnpackGUI.exe
+            ./download-artifacts/artifact-macos-cli/NF.Tool.UnityPackage.Console
