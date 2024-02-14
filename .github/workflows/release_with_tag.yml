@@ -1,0 +1,109 @@
+name: 🚀🏷️ Release with Tag
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  ## ======================================================================================================
+  upload_asset_for_windows_cli:
+    name: 📦️ Upload Asset - NF.Tool.UnityPackage.Console.exe
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: setup dotnet
+        uses: actions/setup-dotnet@v4
+
+      - name: publish
+        run: |
+          cd src/NF.Tool.UnityPackage.Console
+          dotnet publish -c Release -p:PublishProfile=Properties/PublishProfiles/FolderProfile.pubxml
+
+      - name: 📦️⏫ Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-windows-cli
+          path: src/NF.Tool.UnityPackage.Console/bin/Release/net6.0/publish/win-x64/NF.Tool.UnityPackage.Console.exe
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+  ## ======================================================================================================
+  upload_asset_for_windows_gui:
+    name: 📦️ Upload Asset - UnityUnpackGUI.exe
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: setup dotnet
+        uses: actions/setup-dotnet@v4
+
+      - name: publish
+        run: |
+          cd src/UnityUnpackGUI
+          dotnet publish -c Release -p:PublishProfile=Properties/PublishProfiles/FolderProfile.pubxml
+
+      - name: 📦️⏫ Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-windows-gui
+          path: src/UnityUnpackGUI/bin/Release/net6.0-windows/publish/UnityUnpackGUI.exe
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+  ## ======================================================================================================
+  release:
+    needs: [upload_asset_for_windows_cli, upload_asset_for_windows_gui]
+    name: 🚀 Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            CHANGELOG.md
+
+      - name: Make Directory For Download Artifacts
+        run: |
+          mkdir -p download-artifacts
+
+      - name: 📦️⏬ Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: download-artifacts
+
+      - name: Log artifact download
+        run: |
+          ls -alh
+          ls -alh download-artifacts
+
+      - name: Get Tagname
+        id: tag_name
+        run: |
+          echo "current_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Changelog Reader
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ steps.tag_name.outputs.current_version }}
+          path: ./CHANGELOG.md
+
+      - name: 🚀 Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          prerelease: false
+          name: ${{ github.ref_name }}
+          tag_name: ${{ github.ref }}
+          body: ${{ steps.changelog_reader.outputs.changes }}
+          fail_on_unmatched_files: true
+          files: |
+            ./download-artifacts/artifact-windows-cli/NF.Tool.UnityPackage.Console.exe
+            ./download-artifacts/artifact-windows-gui/UnityUnpackGUI.exe
