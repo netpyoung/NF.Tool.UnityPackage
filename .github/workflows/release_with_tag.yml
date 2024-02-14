@@ -59,7 +59,7 @@ jobs:
   ## ======================================================================================================
   upload_asset_for_macos_cli:
     name: 🍎📦️ Upload Asset - NF.Tool.UnityPackage.Console
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,11 +72,16 @@ jobs:
           cd src/NF.Tool.UnityPackage.Console
           dotnet publish -c Release -p:PublishProfile=Properties/PublishProfiles/FolderProfile-macos.pubxml
 
+      - name: Run Zip
+        run: |
+          cd src/NF.Tool.UnityPackage.Console/publish/macos
+          zip -r macos-cli.zip NF.Tool.UnityPackage.Console
+  
       - name: 📦️⏫ Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: artifact-macos-cli
-          path: src/NF.Tool.UnityPackage.Console/publish/macos/NF.Tool.UnityPackage.Console
+          path: src/NF.Tool.UnityPackage.Console/publish/macos/macos-cli.zip
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
@@ -133,4 +138,4 @@ jobs:
           files: |
             ./download-artifacts/artifact-windows-cli/NF.Tool.UnityPackage.Console.exe
             ./download-artifacts/artifact-windows-gui/UnityUnpackGUI.exe
-            ./download-artifacts/artifact-macos-cli/NF.Tool.UnityPackage.Console
+            ./download-artifacts/artifact-macos-cli/macos-cli.zip
