@@ -1,11 +1,5 @@
 # NF.Tool.UnityPackage
 
-<a href="https://github.com/netpyoung/NF.Tool.UnityPackage/actions">
-  <img src="https://github.com/netpyoung/NF.Tool.UnityPackage/workflows/Test/badge.svg?branch=master" />
-</a>
-
-
-
 ## example
 
 ``` cmd
@@ -26,6 +20,19 @@
 ## GUI
 
 ![UnityUnpackGUI](doc/res/UnityUnpackGUI.png)
+
+## macOs
+
+``` sh
+curl -LO https://github.com/netpyoung/NF.Tool.UnityPackage/releases/latest/download/macos-cli.zip
+unzip macos-cli.zip
+./NF.Tool.UnityPackage.Console
+```
+
+``` sh
+# if you download via browser
+xattr -d com.apple.quarantine NF.Tool.UnityPackage.Console
+```
 
 ## Ref
 
