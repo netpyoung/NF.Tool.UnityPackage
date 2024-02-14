@@ -1,5 +1,6 @@
 # Changelog
 
-## [v0.0.3-test]
+## [v0.0.3]
 
-- test
+- support: macOs CLI
+- update: release via action
