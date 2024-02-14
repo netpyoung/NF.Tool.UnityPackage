@@ -1,9 +1,9 @@
-name: Test
+name: 🧪 Test
 
 on: 
   push:
     branches:
-      - master
+      - main
   pull_request: ~
 
 jobs:
