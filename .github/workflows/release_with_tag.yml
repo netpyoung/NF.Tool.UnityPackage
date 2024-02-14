@@ -26,7 +26,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artifact-windows-cli
-          path: src/NF.Tool.UnityPackage.Console/bin/Release/net6.0/publish/win-x64/NF.Tool.UnityPackage.Console.exe
+          path: src/NF.Tool.UnityPackage.Console/publish/win-x64/NF.Tool.UnityPackage.Console.exe
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artifact-windows-gui
-          path: src/UnityUnpackGUI/bin/Release/net6.0-windows/publish/UnityUnpackGUI.exe
+          path: src/UnityUnpackGUI/publish/win-x64/UnityUnpackGUI.exe
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
