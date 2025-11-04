@@ -22,6 +22,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MessageBox.Avalonia" Version="3.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\NF.Tool.UnityPackage\NF.Tool.UnityPackage.csproj" />
 	</ItemGroup>
 </Project>

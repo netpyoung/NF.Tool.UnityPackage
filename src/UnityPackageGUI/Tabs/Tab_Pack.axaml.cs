@@ -3,10 +3,15 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
+using NF.Tool.UnityPackage;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace UnityPackageGUI;
 
@@ -42,11 +47,12 @@ public partial class Tab_Pack : UserControl
         }
 
         IStorageItem f = filesOrNull.ElementAt(0);
-        if (!Directory.Exists(f.Path.AbsolutePath))
+        string dir = f.TryGetLocalPath()!;
+        if (!Directory.Exists(dir))
         {
             return;
         }
-        
+
         e.DragEffects = DragDropEffects.Copy;
     }
 
@@ -58,8 +64,9 @@ public partial class Tab_Pack : UserControl
             return;
         }
 
-        IStorageItem x = filesOrNull.ElementAt(0);
-        PackageRootDir = x.Path.AbsolutePath;
+        IStorageItem f = filesOrNull.ElementAt(0);
+        string dir = f.TryGetLocalPath()!;
+        PackageRootDir = dir;
     }
 
     private async void OnSearchPackageRootFolder(object? sender, RoutedEventArgs e)
@@ -81,30 +88,81 @@ public partial class Tab_Pack : UserControl
             return;
         }
 
-        IStorageFolder x = folders[0];
-        Console.WriteLine(x);
-
-        PackageRootDir = x.Path.AbsolutePath;
+        IStorageItem f = folders.ElementAt(0);
+        string dir = f.TryGetLocalPath()!;
+        PackageRootDir = dir;
     }
 
-    private async void SaveFileButton_Clicked(object sender, RoutedEventArgs args)
+    private async void OnBtnPack(object sender, RoutedEventArgs args)
     {
-        // Get top level from the current control. Alternatively, you can use Window reference instead.
-        var topLevel = TopLevel.GetTopLevel(this);
-
-        // Start async operation to open the dialog.
-        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        TopLevel? topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel == null)
         {
-            Title = "Save Text File"
+            return;
+        }
+
+        if (!Directory.Exists(PackageRootDir))
+        {
+            _ = await MessageBoxManager.GetMessageBoxStandard(
+                "Error",
+                $"Directory does not exist in {PackageRootDir}",
+                ButtonEnum.Ok,
+                Icon.Error
+                ).ShowWindowDialogAsync((Window)topLevel);
+            return;
+        }
+
+        IStorageFile? file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Save UnityPackage File",
+            DefaultExtension = "unitypackage",
+            FileTypeChoices = [new FilePickerFileType("unitypackage")
+            {
+                Patterns = ["*.unitypackage"],
+            }],
         });
 
-        if (file is not null)
+        if (file == null)
         {
-            // Open writing stream from the file.
-            await using var stream = await file.OpenWriteAsync();
-            using var streamWriter = new StreamWriter(stream);
-            // Write some content to the file.
-            await streamWriter.WriteLineAsync("Hello World!");
+            return;
         }
+        string outputUnityPackage = file.TryGetLocalPath()!;
+
+        Opt opt = new Opt
+        {
+            Inputs = PackageRootDir,
+            OutputPath = outputUnityPackage,
+            Prefix = PackageRootDir,
+            Trim = string.Empty,
+        };
+        Packer packer = new Packer();
+        Exception err = packer.Run(opt);
+
+        if (err != null)
+        {
+            _ = await MessageBoxManager.GetMessageBoxStandard(
+                "Error",
+                $"err\n{err}",
+                ButtonEnum.Ok,
+                Icon.Error
+                ).ShowWindowDialogAsync((Window)topLevel);
+            return;
+        }
+
+        _ = await MessageBoxManager.GetMessageBoxStandard(
+            "Done",
+            $"Pack on\n{outputUnityPackage}",
+            ButtonEnum.Ok,
+            Icon.Info
+            ).ShowWindowDialogAsync((Window)topLevel);
+    }
+
+    public class Opt : IOptionPack
+    {
+        public string Inputs { get; set; }
+        public string OutputPath { get; set; } = string.Empty;
+        public string Prefix { get; set; } = string.Empty;
+        public string Ignores { get; set; } = string.Empty;
+        public string Trim { get; set; } = string.Empty;
     }
 }

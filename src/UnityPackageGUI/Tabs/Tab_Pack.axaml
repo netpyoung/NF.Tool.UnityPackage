@@ -24,7 +24,7 @@
 				<Button Grid.Row="0" Content="input" Margin="5" Click="OnSearchPackageRootFolder"/>
 				<TextBox Grid.Row="0" Grid.Column="1" Margin="5" Text="{Binding PackageRootDir, Mode=TwoWay}"/>
 			</Grid>
-			<Button Grid.Row="2"  Grid.Column="1">Pack</Button>
+			<Button Grid.Row="2"  Grid.Column="1" Click="OnBtnPack">Pack</Button>
 		</StackPanel>
 	</Border>
 </UserControl>
