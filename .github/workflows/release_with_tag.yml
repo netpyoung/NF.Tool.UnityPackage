@@ -12,11 +12,15 @@ jobs:
     name: 🪟📦️ Upload Asset - NF.Tool.UnityPackage.Console.exe
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # https://github.com/actions/checkout
+      - name: checkout
+        uses: actions/checkout@v5
 
+      # https://github.com/actions/setup-dotnet
       - name: setup dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
 
       - name: publish
         run: |
@@ -37,11 +41,15 @@ jobs:
     name: 🪟📦️ Upload Asset - UnityUnpackGUI.exe
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # https://github.com/actions/checkout
+      - name: checkout
+        uses: actions/checkout@v5
 
+      # https://github.com/actions/setup-dotnet
       - name: setup dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
 
       - name: publish
         run: |
@@ -61,11 +69,15 @@ jobs:
     name: 🍎📦️ Upload Asset - NF.Tool.UnityPackage.Console
     runs-on: macos-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # https://github.com/actions/checkout
+      - name: checkout
+        uses: actions/checkout@v5
 
+      # https://github.com/actions/setup-dotnet
       - name: setup dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
 
       - name: publish
         run: |
@@ -92,8 +104,9 @@ jobs:
     name: 🚀 Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # https://github.com/actions/checkout
+      - name: checkout
+        uses: actions/checkout@v5
         with:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
@@ -103,8 +116,9 @@ jobs:
         run: |
           mkdir -p download-artifacts
 
+      # https://github.com/actions/download-artifact
       - name: 📦️⏬ Download Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: download-artifacts
 
@@ -119,6 +133,7 @@ jobs:
           echo "current_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
         shell: bash
 
+      # https://github.com/mindsers/changelog-reader-action
       - name: Changelog Reader
         id: changelog_reader
         uses: mindsers/changelog-reader-action@v2
@@ -126,8 +141,9 @@ jobs:
           version: ${{ steps.tag_name.outputs.current_version }}
           path: ./CHANGELOG.md
 
+      # https://github.com/softprops/action-gh-release
       - name: 🚀 Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           draft: true
           prerelease: false

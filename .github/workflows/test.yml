@@ -10,13 +10,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: setup dotnet
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '6.0.x'
-    - name: testing
-      run: |
-        cd src
-        dotnet test NF.Tool.UnityPackage.Test
+      # https://github.com/actions/checkout
+      - name: checkout
+        uses: actions/checkout@v5
+
+      # https://github.com/actions/setup-dotnet
+      - name: setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: testing
+        run: |
+          cd src
+          dotnet test NF.Tool.UnityPackage.Test
