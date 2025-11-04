@@ -12,6 +12,24 @@ using YamlDotNet.RepresentationModel;
 
 namespace NF.Tool.UnityPackage
 {
+    public static class Archive
+    {
+        public static void AddFilesRecursive(this TarArchive archive, string directory)
+        {
+            string[] files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories);
+
+            foreach (string filename in files)
+            {
+                TarEntry entry = TarEntry.CreateEntryFromFile(filename);
+                if (archive.RootPath != null && Path.IsPathRooted(filename))
+                {
+                    entry.Name = Path.GetRelativePath(archive.RootPath, filename);
+                }
+                entry.Name = entry.Name.Replace('\\', '/');
+                archive.WriteEntry(entry, true);
+            }
+        }
+    }
     public class Packer
     {
         public Packer()
@@ -302,6 +320,10 @@ namespace NF.Tool.UnityPackage
                 {
                     using (TarArchive archive = TarArchive.CreateOutputTarArchive(zipStream))
                     {
+                        //string path = inputDir.Replace(Path.DirectorySeparatorChar, '/');
+                        //archive.RootPath = path;
+                        //archive.AddFilesRecursive(path);
+
                         archive.RootPath = inputDir.Replace(Path.DirectorySeparatorChar, '/');
                         //var tarEntry = TarEntry.CreateEntryFromFile(inputDir);
                         //tarEntry.Name = Path.GetFileName(inputDir);
