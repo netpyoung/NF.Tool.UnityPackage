@@ -104,7 +104,7 @@ public partial class Tab_Unpack : UserControl
         {
             _ = await MessageBoxManager.GetMessageBoxStandard(
                 "Error",
-                $"File does not exist in\n{PackagePath}",
+                $"File does not exist in\n{PackagePath}            ",
                 ButtonEnum.Ok,
                 Icon.Error
                 ).ShowWindowDialogAsync((Window)topLevel);
@@ -144,7 +144,7 @@ public partial class Tab_Unpack : UserControl
 
         _ = await MessageBoxManager.GetMessageBoxStandard(
             "Done",
-            $"Unpack on\n{outDirectory}",
+            $"Unpack on\n{outDirectory}            ",
             ButtonEnum.Ok,
             Icon.Info
             ).ShowWindowDialogAsync((Window)topLevel);

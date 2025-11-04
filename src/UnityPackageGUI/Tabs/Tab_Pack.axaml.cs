@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 
 namespace UnityPackageGUI;
 
@@ -105,7 +103,7 @@ public partial class Tab_Pack : UserControl
         {
             _ = await MessageBoxManager.GetMessageBoxStandard(
                 "Error",
-                $"Directory does not exist in {PackageRootDir}",
+                $"Directory does not exist in\n{PackageRootDir}            ",
                 ButtonEnum.Ok,
                 Icon.Error
                 ).ShowWindowDialogAsync((Window)topLevel);
@@ -151,7 +149,7 @@ public partial class Tab_Pack : UserControl
 
         _ = await MessageBoxManager.GetMessageBoxStandard(
             "Done",
-            $"Pack on\n{outputUnityPackage}",
+            $"Pack on\n{outputUnityPackage}            ",
             ButtonEnum.Ok,
             Icon.Info
             ).ShowWindowDialogAsync((Window)topLevel);

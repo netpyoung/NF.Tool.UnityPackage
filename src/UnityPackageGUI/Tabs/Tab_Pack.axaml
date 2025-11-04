@@ -10,8 +10,8 @@
 			CornerRadius="10"
 			BorderBrush="Gray"
 			Background="Transparent"
-			Margin="20"
-			Padding="20"
+			Margin="5"
+			Padding="5"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			DragDrop.AllowDrop="True"
@@ -19,12 +19,12 @@
 			DragDrop.Drop="OnDrop">
 		<StackPanel Orientation="Vertical" Spacing="1">
 			<Grid Margin="5"
-				  ColumnDefinitions="120, 100"
+				  ColumnDefinitions="Auto, *"
 				  RowDefinitions="Auto, Auto, Auto">
-				<Button Grid.Row="0" Content="input" Margin="5" Click="OnSearchPackageRootFolder"/>
-				<TextBox Grid.Row="0" Grid.Column="1" Margin="5" Text="{Binding PackageRootDir, Mode=TwoWay}"/>
+				<Button Grid.Row="0" Content="Directory" Click="OnSearchPackageRootFolder"/>
+				<TextBox Grid.Row="0" Grid.Column="1" Margin="5,5" Text="{Binding PackageRootDir, Mode=TwoWay}" MinWidth="200"/>
 			</Grid>
-			<Button Grid.Row="2"  Grid.Column="1" Click="OnBtnPack">Pack</Button>
+			<Button HorizontalAlignment="Center" Content="Pack" Padding="10,5" Margin="10" Click="OnBtnPack" />
 		</StackPanel>
 	</Border>
 </UserControl>
