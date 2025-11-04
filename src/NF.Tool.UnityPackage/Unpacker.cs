@@ -74,7 +74,7 @@ namespace NF.Tool.UnityPackage
             using (GZipInputStream gzipStream = new GZipInputStream(inStream))
             using (TarArchive tarArchive = TarArchive.CreateInputTarArchive(gzipStream, Encoding.UTF8))
             {
-                tarArchive.ExtractContents(destFolder);
+                tarArchive.ExtractContents(destFolder, allowParentTraversal: true);
             }
         }
     }
