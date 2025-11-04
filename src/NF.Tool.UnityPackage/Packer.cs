@@ -70,7 +70,7 @@ namespace NF.Tool.UnityPackage
                         }
                         else
                         {
-                            return new Exception($"{absPath } is not file or directory.");
+                            return new Exception($"{absPath} is not file or directory.");
                         }
                     }
 
@@ -94,9 +94,9 @@ namespace NF.Tool.UnityPackage
             //  c.txt.meta
             inFileOrDirectory = inFileOrDirectory.Replace(Path.DirectorySeparatorChar, '/');
 
-            YamlDocument meta = GetOrGenerateMeta(inFileOrDirectory);
-            string guid = GetGuid(meta);
-
+            //YamlDocument meta = GetOrGenerateMeta(inFileOrDirectory);
+            //string guid = GetGuid(meta);
+            GetOrGenerateMetaStrAndGui(inFileOrDirectory, out string metaStr, out string guid);
 
             // .unitypackage
             //   - guidDir/
@@ -116,18 +116,18 @@ namespace NF.Tool.UnityPackage
             // guidDir/asset.meta
             {
                 string metaPath = Path.Combine(tempDirectoryPath, guid, "asset.meta");
+                File.WriteAllText(metaPath, metaStr);
+                //using (StreamWriter writer = new StreamWriter(metaPath))
+                //{
+                //    new YamlStream(meta).Save(writer, false);
+                //}
 
-                using (StreamWriter writer = new StreamWriter(metaPath))
-                {
-                    new YamlStream(meta).Save(writer, false);
-                }
+                //FileInfo metaFile = new FileInfo(metaPath);
 
-                FileInfo metaFile = new FileInfo(metaPath);
-
-                using (FileStream metaFileStream = metaFile.Open(FileMode.Open))
-                {
-                    metaFileStream.SetLength(metaFile.Length - 3 - Environment.NewLine.Length);
-                }
+                //using (FileStream metaFileStream = metaFile.Open(FileMode.Open))
+                //{
+                //    metaFileStream.SetLength(metaFile.Length - 3 - Environment.NewLine.Length);
+                //}
             }
 
             // guidDir/pathname
@@ -161,6 +161,38 @@ namespace NF.Tool.UnityPackage
                 CreateAsset(entry.Replace(Path.DirectorySeparatorChar, '/'), trim, prefix, tempDirectoryPath);
             }
         }
+        public static string ToYamlString(YamlDocument document)
+        {
+            var stream = new YamlStream(document);
+            using var writer = new StringWriter();
+            stream.Save(writer, assignAnchors: false);
+            return writer.ToString();
+        }
+        public static string ExtractGuid(string text)
+        {
+            var match = Regex.Match(text, @"guid:\s*([0-9a-fA-F]{32})");
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            return match.Groups[1].Value;
+        }
+
+        private void GetOrGenerateMetaStrAndGui(string inFileOrDirectory, out string outMetaStr, out string outGuid)
+        {
+            YamlDocument meta = GetOrGenerateMeta(inFileOrDirectory);
+            if (meta != null)
+            {
+                outMetaStr = ToYamlString(meta);
+                outMetaStr = outMetaStr.Substring(0, outMetaStr.Length - 3 - Environment.NewLine.Length);
+                outGuid = GetGuid(meta);
+                return;
+            }
+            string metaPath = $"{inFileOrDirectory}.meta";
+            outMetaStr = File.ReadAllText(metaPath);
+            outGuid = ExtractGuid(outMetaStr);
+        }
 
         private YamlDocument GetOrGenerateMeta(string filename)
         {
@@ -170,7 +202,14 @@ namespace NF.Tool.UnityPackage
                 using (StreamReader reader = new StreamReader(metaPath))
                 {
                     YamlStream yaml = new YamlStream();
-                    yaml.Load(reader);
+                    try
+                    {
+                        yaml.Load(reader);
+                    }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
                     return yaml.Documents[0];
                 }
             }
@@ -250,7 +289,7 @@ namespace NF.Tool.UnityPackage
             string rel = Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             if (rel.Contains(Path.DirectorySeparatorChar.ToString()) == false)
             {
-                rel = $".{ Path.DirectorySeparatorChar }{ rel }";
+                rel = $".{Path.DirectorySeparatorChar}{rel}";
             }
             return rel;
         }
