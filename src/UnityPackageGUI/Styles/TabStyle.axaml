@@ -1,0 +1,40 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Design.PreviewWith>
+		<Border Padding="20">
+			<!-- Add Controls for Previewer Here -->
+			<TabControl Margin="5">
+				<TabItem Header="Tab 1">
+					<TextBlock Text="111111111" />
+				</TabItem>
+				<TabItem Header="Tab 2">
+					<TextBlock Text="222222222" />
+				</TabItem>
+			</TabControl>
+		</Border>
+	</Design.PreviewWith>
+
+	<!--
+	ref:
+	https://www.reddit.com/r/AvaloniaUI/comments/1kn2vpk/comment/msoxe5w/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+	-->
+	<Style Selector="TabControl" x:Key="STabControl">
+		<Setter Property="ItemsPanel">
+			<ItemsPanelTemplate>
+				<UniformGrid Columns="{Binding $parent[TabControl].Items.Count}"/>
+			</ItemsPanelTemplate>
+		</Setter>
+	</Style>
+
+	<Style Selector="TabItem" x:Key="STabItem">
+		<Setter Property="HeaderTemplate">
+			<DataTemplate>
+				<TextBlock
+				FontWeight="Bold"
+				Text="{Binding}"
+				TextAlignment="Center"/>
+			</DataTemplate>
+		</Setter>
+	</Style>
+</ResourceDictionary>
+
