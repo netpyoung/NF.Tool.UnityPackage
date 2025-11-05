@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace UnityPackageGUI_Winform
 {
-    public partial class UnityPackageGUI_Winform : Form
+    public partial class UnityPackageGUI_Winform_Form : Form
     {
         internal sealed class Opt_Unpack : IOptionUnpack
         {
@@ -26,7 +26,7 @@ namespace UnityPackageGUI_Winform
 
         const string VERSION = "v0.0.4";
 
-        public UnityPackageGUI_Winform()
+        public UnityPackageGUI_Winform_Form()
         {
             InitializeComponent();
 

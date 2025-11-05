@@ -1,6 +1,6 @@
 ﻿namespace UnityPackageGUI_Winform
 {
-    partial class UnityPackageGUI_Winform
+    partial class UnityPackageGUI_Winform_Form
     {
         /// <summary>
         /// Required designer variable.

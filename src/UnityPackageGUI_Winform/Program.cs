@@ -14,7 +14,7 @@ namespace UnityPackageGUI_Winform
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new UnityPackageGUI_Winform());
+            Application.Run(new UnityPackageGUI_Winform_Form());
         }
     }
 }
