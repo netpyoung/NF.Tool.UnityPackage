@@ -231,6 +231,10 @@ https://github.com/netpyoung/NF.Tool.UnityPackage/
                 outputUnityPackage = dlg.FileName;
             }
 
+            if (string.IsNullOrWhiteSpace(outputUnityPackage))
+            {
+                return;
+            }
 
             Packer packer = new Packer();
             Exception err = packer.Run(new Opt_Pack
