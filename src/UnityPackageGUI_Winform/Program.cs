@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace UnityUnpackGUI
+namespace UnityPackageGUI_Winform
 {
     static class Program
     {
@@ -14,7 +14,7 @@ namespace UnityUnpackGUI
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new UnityUnpackGUI());
+            Application.Run(new UnityPackageGUI_Winform());
         }
     }
 }

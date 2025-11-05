@@ -8,5 +8,5 @@
   <Project Path="NF.Tool.UnityPackage.Test/NF.Tool.UnityPackage.Test.csproj" />
   <Project Path="NF.Tool.UnityPackage/NF.Tool.UnityPackage.csproj" />
   <Project Path="UnityPackageGUI/UnityPackageGUI.csproj" />
-  <Project Path="UnityUnpackGUI/UnityUnpackGUI.csproj" />
+  <Project Path="UnityPackageGUI_Winform/UnityPackageGUI_Winform.csproj" />
 </Solution>
