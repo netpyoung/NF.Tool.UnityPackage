@@ -53,17 +53,18 @@ jobs:
 
       - name: publish
         run: |
-          cd src/UnityUnpackGUI
+          cd src/UnityPackageGUI_Winform
           dotnet publish -c Release -p:PublishProfile=Properties/PublishProfiles/FolderProfile.pubxml
 
       - name: 📦️⏫ Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: artifact-windows-gui
-          path: src/UnityUnpackGUI/publish/win-x64/UnityUnpackGUI.exe
+          path: src/UnityPackageGUI_Winform/publish/win-x64/UnityPackageGUI_Winform.exe
           if-no-files-found: error
           retention-days: 1
           compression-level: 0
+
   ## ======================================================================================================
   upload_asset_for_macos_cli:
     name: 🍎📦️ Upload Asset - NF.Tool.UnityPackage.Console
