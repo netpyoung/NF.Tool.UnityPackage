@@ -71,8 +71,17 @@ namespace NF.Tool.UnityPackage
             File.WriteAllText(metaPath, metaStr);
 
             // guidDir/pathname
+            string dir = string.Empty;
+            if (IsOnUnityProject(inFileOrDirectory, out string outP))
+            {
+                dir = inFileOrDirectory.Substring(outP.Length).Trim('/');
+            }
+            else
+            {
+                dir = $"Assets/{new DirectoryInfo(baseDir).Name}";
+            }
             string pathname = inFileOrDirectory.Substring(baseDir.Length).Trim('/');
-            pathname = $"Assets/{new DirectoryInfo(baseDir).Name}/{pathname}";
+            pathname = $"{dir}/{pathname}";
             File.WriteAllText(Path.Combine(tempDirectoryPath, guid, "pathname"), pathname);
         }
 
@@ -91,15 +100,17 @@ namespace NF.Tool.UnityPackage
 
         private static string ToYamlString(YamlDocument document)
         {
-            var stream = new YamlStream(document);
-            using var writer = new StringWriter();
-            stream.Save(writer, assignAnchors: false);
-            return writer.ToString();
+            YamlStream stream = new YamlStream(document);
+            using (StringWriter writer = new StringWriter())
+            {
+                stream.Save(writer, assignAnchors: false);
+                return writer.ToString();
+            }
         }
 
         private static string ExtractGuid(string text)
         {
-            var match = Regex.Match(text, @"guid:\s*([0-9a-fA-F]{32})");
+            Match match = Regex.Match(text, @"guid:\s*([0-9a-fA-F]{32})");
             if (!match.Success)
             {
                 return null;
@@ -222,6 +233,46 @@ namespace NF.Tool.UnityPackage
             {
                 AddDirectoryFilesToTar(tarArchive, directory);
             }
+        }
+
+        private bool IsOnUnityProject(string fullpath, out string outP)
+        {
+            if (!fullpath.Contains("Assets", StringComparison.OrdinalIgnoreCase))
+            {
+                outP = string.Empty;
+                return false;
+            }
+
+            DirectoryInfo dir = new DirectoryInfo(fullpath);
+
+            while (dir != null)
+            {
+                if (!Directory.Exists(Path.Combine(dir.FullName, "Assets")))
+                {
+                    dir = dir.Parent;
+                    continue;
+                }
+
+                string manifestPath = Path.Combine(dir.FullName, "Packages", "manifest.json");
+                if (File.Exists(manifestPath))
+                {
+                    outP = dir.FullName.Replace('\\', '/');
+                    return true;
+                }
+
+                string versionPath = Path.Combine(dir.FullName, "ProjectSettings", "ProjectVersion.txt");
+                if (File.Exists(versionPath))
+                {
+                    outP = dir.FullName.Replace('\\', '/');
+                    return true;
+                }
+
+                dir = dir.Parent;
+            }
+
+
+            outP = string.Empty;
+            return false;
         }
     }
 }
