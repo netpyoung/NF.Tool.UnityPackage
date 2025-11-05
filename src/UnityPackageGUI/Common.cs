@@ -2,7 +2,7 @@
 
 namespace UnityPackageGUI
 {
-    internal sealed class Common
+    internal static class Common
     {
         public static FilePickerFileType FileType_UnityPackage { get; } = new FilePickerFileType("unitypackage")
         {
