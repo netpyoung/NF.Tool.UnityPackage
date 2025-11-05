@@ -8,10 +8,21 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Deterministic>true</Deterministic>
 		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+		<WarningLevel>5</WarningLevel>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<NoWarn>CA2000;CA1303;CA1707</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\NF.Tool.UnityPackage\NF.Tool.UnityPackage.csproj" />
 	</ItemGroup>
-
+	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 </Project>

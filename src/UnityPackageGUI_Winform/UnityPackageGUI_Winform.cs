@@ -45,7 +45,7 @@ https://github.com/netpyoung/NF.Tool.UnityPackage/
         }
 
         #region Unpack
-        private bool IsUnityPackagePath(string f)
+        private static bool IsUnityPackagePath(string f)
         {
             if (!File.Exists(f))
             {
