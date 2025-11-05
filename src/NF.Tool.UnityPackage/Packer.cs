@@ -1,10 +1,7 @@
 ﻿using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -20,63 +17,21 @@ namespace NF.Tool.UnityPackage
 
         public Exception Run(IOptionPack o)
         {
-            string[] inputs = o.Inputs.Split(';');
-            Debug.Assert(inputs.Length > 0);
+            string input = o.InputDir;
+            string absPath = Path.GetFullPath(input).Replace('\\', '/');
 
-            List<Regex> ignores = null;
-            if (string.IsNullOrWhiteSpace(o.Ignores))
+            if (!Directory.Exists(absPath))
             {
-                ignores = new List<Regex>();
-            }
-            else
-            {
-                ignores = o.Ignores.Split(';').Select(x => new Regex(x, RegexOptions.Compiled | RegexOptions.IgnoreCase)).ToList();
-            }
-
-            Regex trim = null;
-            if (!string.IsNullOrWhiteSpace(o.Trim))
-            {
-                trim = new Regex($"^{o.Trim}");
+                return new Exception($"{absPath} is not file or directory.");
             }
 
             using (TempDirectory tempDirectory = new TempDirectory())
             {
                 try
                 {
-                    foreach (string input in inputs)
-                    {
-                        if (ignores.Any(ignore => ignore.IsMatch(input)))
-                        {
-                            continue;
-                        }
-
-                        string absPath;
-                        if (Path.IsPathRooted(input))
-                        {
-                            absPath = input;
-                        }
-                        else
-                        {
-                            absPath = Path.Combine(Environment.CurrentDirectory, input).Replace(Path.DirectorySeparatorChar, '/');
-                        }
-
-                        if (Directory.Exists(absPath))
-                        {
-                            ProcessDirectory(absPath, trim, o.Prefix, tempDirectory.TempDirectoryPath, ignores);
-                        }
-                        else if (File.Exists(absPath))
-                        {
-                            CreateAsset(absPath, trim, o.Prefix, tempDirectory.TempDirectoryPath);
-                        }
-                        else
-                        {
-                            return new Exception($"{absPath} is not file or directory.");
-                        }
-                    }
-
+                    ProcessDirectory(absPath, tempDirectory.TempDirectoryPath);
                     CreateTarGzip(tempDirectory.TempDirectoryPath, o.OutputPath);
                     return null;
-
                 }
                 catch (Exception ex)
                 {
@@ -85,7 +40,7 @@ namespace NF.Tool.UnityPackage
             }
         }
 
-        private void CreateAsset(string inFileOrDirectory, Regex trim, string prefix, string tempDirectoryPath)
+        private void CreateAsset(string baseDir, string inFileOrDirectory, string tempDirectoryPath)
         {
             // a.txt
             // b/
@@ -94,8 +49,6 @@ namespace NF.Tool.UnityPackage
             //  c.txt.meta
             inFileOrDirectory = inFileOrDirectory.Replace(Path.DirectorySeparatorChar, '/');
 
-            //YamlDocument meta = GetOrGenerateMeta(inFileOrDirectory);
-            //string guid = GetGuid(meta);
             GetOrGenerateMetaStrAndGui(inFileOrDirectory, out string metaStr, out string guid);
 
             // .unitypackage
@@ -114,37 +67,16 @@ namespace NF.Tool.UnityPackage
             }
 
             // guidDir/asset.meta
-            {
-                string metaPath = Path.Combine(tempDirectoryPath, guid, "asset.meta");
-                File.WriteAllText(metaPath, metaStr);
-                //using (StreamWriter writer = new StreamWriter(metaPath))
-                //{
-                //    new YamlStream(meta).Save(writer, false);
-                //}
-
-                //FileInfo metaFile = new FileInfo(metaPath);
-
-                //using (FileStream metaFileStream = metaFile.Open(FileMode.Open))
-                //{
-                //    metaFileStream.SetLength(metaFile.Length - 3 - Environment.NewLine.Length);
-                //}
-            }
+            string metaPath = Path.Combine(tempDirectoryPath, guid, "asset.meta");
+            File.WriteAllText(metaPath, metaStr);
 
             // guidDir/pathname
-            string pathname = inFileOrDirectory.Substring(Environment.CurrentDirectory.Replace(Path.DirectorySeparatorChar, '/').Length).Trim('/');
-            if (trim != null)
-            {
-                pathname = $"{prefix}{trim.Replace(pathname, "", 1)}";
-            }
-            else
-            {
-                pathname = $"{prefix}{pathname}";
-            }
-
+            string pathname = inFileOrDirectory.Substring(baseDir.Length).Trim('/');
+            pathname = $"Assets/{new DirectoryInfo(baseDir).Name}/{pathname}";
             File.WriteAllText(Path.Combine(tempDirectoryPath, guid, "pathname"), pathname);
         }
 
-        private void ProcessDirectory(string inputDirectory, Regex trim, string prefix, string tempDirectoryPath, List<Regex> ignores)
+        private void ProcessDirectory(string inputDirectory, string tempDirectoryPath)
         {
             foreach (string entry in Directory.EnumerateFileSystemEntries(inputDirectory, "*", SearchOption.AllDirectories))
             {
@@ -153,22 +85,19 @@ namespace NF.Tool.UnityPackage
                     continue;
                 }
 
-                if (ignores.Any(ignore => ignore.IsMatch(entry)))
-                {
-                    continue;
-                }
-
-                CreateAsset(entry.Replace(Path.DirectorySeparatorChar, '/'), trim, prefix, tempDirectoryPath);
+                CreateAsset(inputDirectory, entry.Replace('\\', '/'), tempDirectoryPath);
             }
         }
-        public static string ToYamlString(YamlDocument document)
+
+        private static string ToYamlString(YamlDocument document)
         {
             var stream = new YamlStream(document);
             using var writer = new StringWriter();
             stream.Save(writer, assignAnchors: false);
             return writer.ToString();
         }
-        public static string ExtractGuid(string text)
+
+        private static string ExtractGuid(string text)
         {
             var match = Regex.Match(text, @"guid:\s*([0-9a-fA-F]{32})");
             if (!match.Success)
@@ -237,7 +166,7 @@ namespace NF.Tool.UnityPackage
             }
         }
 
-        string GetGuid(YamlDocument meta)
+        private string GetGuid(YamlDocument meta)
         {
             YamlMappingNode mapping = (YamlMappingNode)meta.RootNode;
             YamlScalarNode key = new YamlScalarNode("guid");
@@ -245,7 +174,7 @@ namespace NF.Tool.UnityPackage
             return value.Value;
         }
 
-        string CreateMD5(string input)
+        private string CreateMD5(string input)
         {
             using (MD5 md5 = MD5.Create())
             {
@@ -263,37 +192,6 @@ namespace NF.Tool.UnityPackage
             }
         }
 
-        internal void AddFilesRecursive(TarArchive archive, string directory)
-        {
-            string[] files = Directory.GetFiles(directory, "*", SearchOption.AllDirectories);
-
-            foreach (string filename in files)
-            {
-                TarEntry entry = TarEntry.CreateEntryFromFile(filename);
-                if (archive.RootPath != null && Path.IsPathRooted(filename))
-                {
-#if NETSTANDARD2_0
-                    entry.Name = GetRelativePath(archive.RootPath, filename);
-#elif NETSTANDARD3
-                    entry.Name = Path.GetRelativePath(archive.RootPath, filename);
-#endif
-                }
-                entry.Name = entry.Name.Replace('\\', '/');
-                archive.WriteEntry(entry, true);
-            }
-        }
-
-        public string GetRelativePath(string relativeTo, string path)
-        {
-            Uri uri = new Uri(relativeTo);
-            string rel = Uri.UnescapeDataString(uri.MakeRelativeUri(new Uri(path)).ToString()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-            if (rel.Contains(Path.DirectorySeparatorChar.ToString()) == false)
-            {
-                rel = $".{Path.DirectorySeparatorChar}{rel}";
-            }
-            return rel;
-        }
-
         private void CreateTarGzip(string inputDir, string outputTarGzip)
         {
             using (FileStream stream = new FileStream(outputTarGzip, FileMode.CreateNew))
@@ -305,7 +203,7 @@ namespace NF.Tool.UnityPackage
             }
         }
 
-        void AddDirectoryFilesToTar(TarArchive tarArchive, string sourceDirectory)
+        private void AddDirectoryFilesToTar(TarArchive tarArchive, string sourceDirectory)
         {
             string[] filenames = Directory.GetFiles(sourceDirectory);
 

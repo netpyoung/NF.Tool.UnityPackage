@@ -23,15 +23,12 @@ namespace NF.Tool.UnityPackage.Test
             using (TempDirectory temp = new TempDirectory())
             {
                 string inputDir = "../../../sample";
-                string prefix = "sample2";
                 IEnumerable<string> systemEntries = Directory.EnumerateFileSystemEntries(inputDir, "*", SearchOption.AllDirectories);
                 string outputUnityPackage = Path.Combine(temp.TempDirectoryPath, "a.unitypackage");
                 Program.OptionPack opt = new Program.OptionPack
                 {
-                    Inputs = inputDir,
+                    InputDir = inputDir,
                     OutputPath = outputUnityPackage,
-                    Prefix = prefix,
-                    Trim = "../../../sample",
                 };
                 Packer packer = new Packer();
                 Exception err = packer.Run(opt);
@@ -53,7 +50,7 @@ namespace NF.Tool.UnityPackage.Test
                     foreach (string entry in systemEntries)
                     {
                         string relative = Path.GetRelativePath(inputDir, entry);
-                        string unpackedPath = Path.Combine(temp2.TempDirectoryPath, prefix, relative);
+                        string unpackedPath = Path.Combine(temp2.TempDirectoryPath, "Assets", "sample", relative);
 
                         if (Directory.Exists(entry))
                         {

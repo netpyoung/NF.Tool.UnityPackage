@@ -128,10 +128,8 @@ public partial class Tab_Pack : UserControl
 
         Opt opt = new Opt
         {
-            Inputs = PackageRootDir,
+            InputDir = PackageRootDir,
             OutputPath = outputUnityPackage,
-            Prefix = PackageRootDir,
-            Trim = string.Empty,
         };
         Packer packer = new Packer();
         Exception err = packer.Run(opt);
@@ -157,10 +155,8 @@ public partial class Tab_Pack : UserControl
 
     public class Opt : IOptionPack
     {
-        public string Inputs { get; set; }
+        public string InputDir { get; set; }
         public string OutputPath { get; set; } = string.Empty;
         public string Prefix { get; set; } = string.Empty;
-        public string Ignores { get; set; } = string.Empty;
-        public string Trim { get; set; } = string.Empty;
     }
 }

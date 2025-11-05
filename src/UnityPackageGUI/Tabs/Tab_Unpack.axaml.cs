@@ -23,6 +23,14 @@ public partial class Tab_Unpack : UserControl
         set => SetValue(PackagePathProperty, value);
     }
 
+    public static readonly StyledProperty<bool> IsWithoutMetaProperty = AvaloniaProperty.Register<UserControl, bool>(nameof(IsWithoutMeta), defaultValue: true);
+
+    public bool IsWithoutMeta
+    {
+        get => GetValue(IsWithoutMetaProperty);
+        set => SetValue(IsWithoutMetaProperty, value);
+    }
+
     public Tab_Unpack()
     {
         InitializeComponent();
@@ -128,7 +136,7 @@ public partial class Tab_Unpack : UserControl
         {
             InputUnityPackagePath = PackagePath,
             OutputDirectoryPath = outDirectory,
-            IsUnpackMeta = false,
+            IsUnpackMeta = !IsWithoutMeta,
         });
 
         if (err != null)

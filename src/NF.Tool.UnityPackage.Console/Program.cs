@@ -20,20 +20,11 @@ namespace NF.Tool.UnityPackage.Console
         [Verb("pack", HelpText = "pack.unitypackage")]
         public class OptionPack : IOptionPack
         {
-            [Option('i', "inputs", Required = true, Separator = ';', HelpText = "input paths (seperate by ';')")]
-            public string Inputs { get; set; }
+            [Option('i', "input", Required = true, Separator = ';', HelpText = "input directory")]
+            public string InputDir { get; set; }
 
             [Option('o', "output", Required = false, HelpText = "output .unitypackage")]
             public string OutputPath { get; set; } = string.Empty;
-
-            [Option('p', "prefix", Required = false, HelpText = "add output prefix")]
-            public string Prefix { get; set; } = string.Empty;
-
-            [Option('r', "ignores", Required = false, Separator = ';', HelpText = "ignore regexs (seperate by ';')")]
-            public string Ignores { get; set; } = string.Empty;
-
-            [Option('t', "trim", Required = false, HelpText = "trim output prefix")]
-            public string Trim { get; set; } = string.Empty;
         }
 
         static int Main(string[] args)
