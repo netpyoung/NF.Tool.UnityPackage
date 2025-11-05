@@ -154,5 +154,5 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             ./download-artifacts/artifact-windows-cli/NF.Tool.UnityPackage.Console.exe
-            ./download-artifacts/artifact-windows-gui/UnityUnpackGUI.exe
+            ./download-artifacts/artifact-windows-gui/UnityPackageGUI_Winform.exe
             ./download-artifacts/artifact-macos-cli/macos-cli.zip
