@@ -1,5 +1,9 @@
 # NF.Tool.UnityPackage
 
+## Require to run
+
+- [.NET Desktop Runtime 10.0.x](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+
 ## example
 
 ``` cmd
@@ -19,7 +23,7 @@
 
 ## GUI
 
-![UnityUnpackGUI](doc/res/UnityUnpackGUI.png)
+![UnityPackageGUI_Winform](doc/res/UnityPackageGUI_Winform.png)
 
 ## macOs
 
