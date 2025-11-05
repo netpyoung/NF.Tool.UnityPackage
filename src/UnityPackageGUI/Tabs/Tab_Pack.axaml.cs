@@ -114,6 +114,7 @@ public partial class Tab_Pack : UserControl
         {
             Title = "Save UnityPackage File",
             DefaultExtension = "unitypackage",
+            ShowOverwritePrompt = false,
             FileTypeChoices = [new FilePickerFileType("unitypackage")
             {
                 Patterns = ["*.unitypackage"],
@@ -153,9 +154,9 @@ public partial class Tab_Pack : UserControl
             ).ShowWindowDialogAsync((Window)topLevel);
     }
 
-    public class Opt : IOptionPack
+    internal sealed class Opt : IOptionPack
     {
-        public string InputDir { get; set; }
+        public required string InputDir { get; set; }
         public string OutputPath { get; set; } = string.Empty;
         public string Prefix { get; set; } = string.Empty;
     }

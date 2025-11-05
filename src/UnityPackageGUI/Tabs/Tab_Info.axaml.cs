@@ -1,6 +1,5 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using System.Diagnostics;
 
 namespace UnityPackageGUI;
 
@@ -13,12 +12,12 @@ public partial class Tab_Info : UserControl
 
     private void OnLinkClicked(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
-        var url = "https://github.com/netpyoung/NF.Tool.UnityPackage";
-        var psi = new System.Diagnostics.ProcessStartInfo
+        string url = "https://github.com/netpyoung/NF.Tool.UnityPackage";
+        ProcessStartInfo psi = new()
         {
             FileName = url,
             UseShellExecute = true
         };
-        System.Diagnostics.Process.Start(psi);
+        Process.Start(psi);
     }
 }

@@ -158,11 +158,11 @@ public partial class Tab_Unpack : UserControl
             ).ShowWindowDialogAsync((Window)topLevel);
     }
 
-    public class Opt : IOptionUnpack
+    internal sealed class Opt : IOptionUnpack
     {
-        public string InputUnityPackagePath { get; set; }
+        public required string InputUnityPackagePath { get; set; }
 
-        public string OutputDirectoryPath { get; set; }
+        public required string OutputDirectoryPath { get; set; }
 
         public bool IsUnpackMeta { get; set; }
     }
