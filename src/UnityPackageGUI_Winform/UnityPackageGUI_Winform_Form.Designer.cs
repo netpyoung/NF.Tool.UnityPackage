@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            tabControl1 = new System.Windows.Forms.TabControl();
+            tabControl_main = new System.Windows.Forms.TabControl();
             tab_Unpack = new System.Windows.Forms.TabPage();
             tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             btn_unpack = new System.Windows.Forms.Button();
@@ -46,7 +46,7 @@
             tab_Info = new System.Windows.Forms.TabPage();
             lbl_info = new System.Windows.Forms.RichTextBox();
             tableLayoutPanel1.SuspendLayout();
-            tabControl1.SuspendLayout();
+            tabControl_main.SuspendLayout();
             tab_Unpack.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
@@ -61,7 +61,7 @@
             tableLayoutPanel1.ColumnCount = 1;
             tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            tableLayoutPanel1.Controls.Add(tabControl1, 0, 0);
+            tableLayoutPanel1.Controls.Add(tabControl_main, 0, 0);
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -71,17 +71,17 @@
             tableLayoutPanel1.Size = new System.Drawing.Size(800, 450);
             tableLayoutPanel1.TabIndex = 0;
             // 
-            // tabControl1
+            // tabControl_main
             // 
-            tabControl1.Controls.Add(tab_Unpack);
-            tabControl1.Controls.Add(tab_Pack);
-            tabControl1.Controls.Add(tab_Info);
-            tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            tabControl1.Location = new System.Drawing.Point(3, 3);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size(794, 444);
-            tabControl1.TabIndex = 0;
+            tabControl_main.Controls.Add(tab_Unpack);
+            tabControl_main.Controls.Add(tab_Pack);
+            tabControl_main.Controls.Add(tab_Info);
+            tabControl_main.Dock = System.Windows.Forms.DockStyle.Fill;
+            tabControl_main.Location = new System.Drawing.Point(3, 3);
+            tabControl_main.Name = "tabControl_main";
+            tabControl_main.SelectedIndex = 0;
+            tabControl_main.Size = new System.Drawing.Size(794, 444);
+            tabControl_main.TabIndex = 0;
             // 
             // tab_Unpack
             // 
@@ -268,16 +268,16 @@
             lbl_info.Text = "";
             lbl_info.LinkClicked += richTextBox1_LinkClicked;
             // 
-            // UnityPackageGUI_Winform
+            // UnityPackageGUI_Winform_Form
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(800, 450);
             Controls.Add(tableLayoutPanel1);
-            Name = "UnityPackageGUI_Winform";
+            Name = "UnityPackageGUI_Winform_Form";
             Text = "UnityPackageGUI_Winform";
             tableLayoutPanel1.ResumeLayout(false);
-            tabControl1.ResumeLayout(false);
+            tabControl_main.ResumeLayout(false);
             tab_Unpack.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
@@ -292,7 +292,7 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabControl_main;
         private System.Windows.Forms.TabPage tab_Unpack;
         private System.Windows.Forms.TabPage tab_Pack;
         private System.Windows.Forms.TabPage tab_Info;
