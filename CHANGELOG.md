@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.5]
+
+- remove: SharpZipLib , YamlDotNet dependencies
+
 ## [v0.0.4]
 
 - fix: Assets path problem

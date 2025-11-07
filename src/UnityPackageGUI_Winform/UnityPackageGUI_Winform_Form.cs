@@ -24,7 +24,7 @@ namespace UnityPackageGUI_Winform
             public string Prefix { get; set; } = string.Empty;
         }
 
-        const string VERSION = "v0.0.4";
+        const string VERSION = "v0.0.5";
 
         public UnityPackageGUI_Winform_Form()
         {
