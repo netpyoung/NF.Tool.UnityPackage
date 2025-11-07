@@ -1,11 +1,10 @@
-﻿using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.Tar;
-using System;
+﻿using System;
+using System.Formats.Tar;
 using System.IO;
+using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using YamlDotNet.RepresentationModel;
 
 namespace NF.Tool.UnityPackage
 {
@@ -98,16 +97,6 @@ namespace NF.Tool.UnityPackage
             }
         }
 
-        private static string ToYamlString(YamlDocument document)
-        {
-            YamlStream stream = new YamlStream(document);
-            using (StringWriter writer = new StringWriter())
-            {
-                stream.Save(writer, assignAnchors: false);
-                return writer.ToString();
-            }
-        }
-
         private static string ExtractGuid(string text)
         {
             Match match = Regex.Match(text, @"guid:\s*([0-9a-fA-F]{32})");
@@ -121,68 +110,24 @@ namespace NF.Tool.UnityPackage
 
         private void GetOrGenerateMetaStrAndGui(string inFileOrDirectory, out string outMetaStr, out string outGuid)
         {
-            YamlDocument meta = GetOrGenerateMeta(inFileOrDirectory);
-            if (meta != null)
-            {
-                outMetaStr = ToYamlString(meta);
-                outMetaStr = outMetaStr.Substring(0, outMetaStr.Length - 3 - Environment.NewLine.Length);
-                outGuid = GetGuid(meta);
-                return;
-            }
             string metaPath = $"{inFileOrDirectory}.meta";
-            outMetaStr = File.ReadAllText(metaPath);
-            outGuid = ExtractGuid(outMetaStr);
-        }
-
-        private YamlDocument GetOrGenerateMeta(string filename)
-        {
-            string metaPath = $"{filename}.meta";
             if (File.Exists(metaPath))
             {
-                using (StreamReader reader = new StreamReader(metaPath))
-                {
-                    YamlStream yaml = new YamlStream();
-                    try
-                    {
-                        yaml.Load(reader);
-                    }
-                    catch (Exception)
-                    {
-                        return null;
-                    }
-                    return yaml.Documents[0];
-                }
+                outMetaStr = File.ReadAllText(metaPath);
+                outGuid = ExtractGuid(outMetaStr);
+            }
+
+            string guid = CreateMD5(inFileOrDirectory);
+            if (Directory.Exists(inFileOrDirectory))
+            {
+                outMetaStr = string.Join('\n', ["fileFormatVersion: 2", $"guid: {guid}", "folderAsset: yes"]);
+                outGuid = guid;
             }
             else
             {
-                string guid = CreateMD5(filename);
-
-                if (Directory.Exists(filename))
-                {
-                    return new YamlDocument(new YamlMappingNode
-                        {
-                            {"guid", guid},
-                            {"fileFormatVersion", "2"},
-                            {"folderAsset", "yes"}
-                        });
-                }
-                else
-                {
-                    return new YamlDocument(new YamlMappingNode
-                        {
-                            {"guid", guid},
-                            {"fileFormatVersion", "2"}
-                        });
-                }
+                outMetaStr = string.Join('\n', ["fileFormatVersion: 2", $"guid: {guid}", ""]);
+                outGuid = guid;
             }
-        }
-
-        private string GetGuid(YamlDocument meta)
-        {
-            YamlMappingNode mapping = (YamlMappingNode)meta.RootNode;
-            YamlScalarNode key = new YamlScalarNode("guid");
-            YamlScalarNode value = (YamlScalarNode)mapping[key];
-            return value.Value;
         }
 
         private string CreateMD5(string input)
@@ -205,33 +150,10 @@ namespace NF.Tool.UnityPackage
 
         private void CreateTarGzip(string inputDir, string outputTarGzip)
         {
-            using (FileStream stream = new FileStream(outputTarGzip, FileMode.CreateNew))
-            using (GZipOutputStream zipStream = new GZipOutputStream(stream))
-            using (TarArchive archive = TarArchive.CreateOutputTarArchive(zipStream))
+            using FileStream stream = new FileStream(outputTarGzip, FileMode.CreateNew);
+            using (GZipStream gzipStream = new GZipStream(stream, CompressionMode.Compress))
             {
-                archive.RootPath = inputDir.Replace(Path.DirectorySeparatorChar, '/');
-                AddDirectoryFilesToTar(archive, inputDir);
-            }
-        }
-
-        private void AddDirectoryFilesToTar(TarArchive tarArchive, string sourceDirectory)
-        {
-            string[] filenames = Directory.GetFiles(sourceDirectory);
-
-            foreach (string filename in filenames)
-            {
-                string filenameReplaced = filename.Replace('\\', '/');
-                TarEntry tarEntry = TarEntry.CreateEntryFromFile(filenameReplaced);
-
-                string root = Path.GetPathRoot(sourceDirectory);
-                tarEntry.Name = filename.Remove(0, root.Length + tarArchive.RootPath.Length + 1).Replace('\\', '/');
-                tarArchive.WriteEntry(tarEntry, true);
-            }
-
-            string[] directories = Directory.GetDirectories(sourceDirectory);
-            foreach (string directory in directories)
-            {
-                AddDirectoryFilesToTar(tarArchive, directory);
+                TarFile.CreateFromDirectory(inputDir, gzipStream, includeBaseDirectory: false);
             }
         }
 

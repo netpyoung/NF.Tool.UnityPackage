@@ -1,9 +1,8 @@
-﻿using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.Tar;
-using System;
+﻿using System;
+using System.Formats.Tar;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using System.Text;
 
 namespace NF.Tool.UnityPackage
 {
@@ -70,11 +69,12 @@ namespace NF.Tool.UnityPackage
 
         private void ExtractTarGzip(string gzArchiveName, string destFolder)
         {
-            using (FileStream inStream = File.OpenRead(gzArchiveName))
-            using (GZipInputStream gzipStream = new GZipInputStream(inStream))
-            using (TarArchive tarArchive = TarArchive.CreateInputTarArchive(gzipStream, Encoding.UTF8))
+            Directory.CreateDirectory(destFolder);
+
+            using FileStream fileStream = File.OpenRead(gzArchiveName);
+            using (GZipStream gzipStream = new GZipStream(fileStream, CompressionMode.Decompress))
             {
-                tarArchive.ExtractContents(destFolder, allowParentTraversal: true);
+                TarFile.ExtractToDirectory(gzipStream, destFolder, overwriteFiles: true);
             }
         }
     }

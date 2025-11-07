@@ -5,7 +5,6 @@ using System.IO;
 using System.Security.Cryptography;
 using Xunit;
 using Xunit.Abstractions;
-using YamlDotNet.RepresentationModel;
 
 namespace NF.Tool.UnityPackage.Test
 {
@@ -74,25 +73,6 @@ namespace NF.Tool.UnityPackage.Test
                         }
                     }
                 }
-            }
-        }
-
-        YamlDocument GetYamlDocument(string metaPath)
-        {
-            using (StreamReader reader = new StreamReader(metaPath))
-            {
-                YamlStream yaml = new YamlStream();
-                yaml.Load(reader);
-                return yaml.Documents[0];
-            }
-        }
-
-        private static byte[] GetMD5(string file)
-        {
-            using (MD5 md5 = MD5.Create())
-            using (FileStream stream = File.OpenRead(file))
-            {
-                return md5.ComputeHash(stream);
             }
         }
     }
